@@ -96,6 +96,7 @@
   </details>
 
   <div id="result"></div>
+  <button onclick="calculate()">Show Results</button>
   <button onclick="generateReport()">Generate Report</button>
   <button onclick="downloadCSV()">Download CSV</button>
 <script>
@@ -173,7 +174,7 @@ const resultDiv = document.getElementById("result");
 
 Object.keys(vaccines).forEach(vaccine => {
   const label = document.createElement("label");
-  label.innerHTML = `<input type="checkbox" value="${vaccine}" onchange="calculate()"> ${vaccine}`;
+  label.innerHTML = `<input type="checkbox" value="${vaccine}"> ${vaccine}`;
   vaccineForm.appendChild(label);
 });
 
@@ -214,7 +215,8 @@ function downloadCSV() {
   const selected = Array.from(document.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value);
   const totalIngredients = {};
   const weight = parseFloat(document.getElementById("weightInput").value) || 154;
-  calculate();
+ 
+
 
   selected.forEach(vaccine => {
     Object.entries(vaccines[vaccine]).forEach(([name, data]) => {
