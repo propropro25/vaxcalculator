@@ -96,10 +96,10 @@
       <li><strong>BBB</strong>: Blood-Brain Barrier permeability — measures neuroinvasion risk.</li>
     </ul>
   </details>
-
-  <div id="result"></div>
+  <div id="result">Select vaccines and enter weight, then click "Show Results".</div>
   <button onclick="generateReport()">Generate Report</button>
   <button onclick="downloadCSV()">Download CSV</button>
+  
 <script>
   const vaccines = {
   "Hepatitis B (Engerix-B)": {
@@ -194,7 +194,7 @@ function calculate() {
   let html = `<table><tr><th>Ingredient</th><th>Total</th><th>Per lb</th><th>Origin</th><th>Effect</th><th>VGCC</th><th>Mito</th><th>BBB</th></tr>`;
 
   Object.entries(totalIngredients).forEach(([name, data]) => {
-    const perLb = (data.total / bodyWeight).toFixed(2);
+    const perLb = (d.total / weight).toFixed(2);
     const highlight = thresholds[name] && data.total > thresholds[name] ? 'highlight' : '';
     html += `<tr class="${highlight}"><td>${name}</td><td>${data.total} ${data.unit}</td><td>${perLb} ${data.unit}/lb</td><td>${data.origin}</td><td>${data.effect}</td><td>${data.vgcc}</td><td>${data.mito}</td><td>${data.bbb}</td></tr>`;
   });
@@ -241,7 +241,7 @@ function downloadCSV() {
   a.click();
   document.body.removeChild(a);
 }
-  <div id="result">Select vaccines and enter weight, then click "Show Results".</div>
+
 
 </script>
 </body>
