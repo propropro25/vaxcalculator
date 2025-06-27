@@ -80,11 +80,13 @@
   <h1>Advanced Vaccine Ingredient Calculator</h1>
   <div class="vaccine-select" id="vaccineForm"></div>
 
-  <div style="margin: 1rem 0;">
-    <label for="weightInput">Body Weight (lbs):</label>
-    <input type="number" id="weightInput" value="154" min="1" max="600" />
-    <span style="font-size: 0.9rem; color: #aaa;">(used to calculate ingredient per lb)</span>
-  </div>
+<div style="margin: 1rem 0;">
+  <label for="weightInput">Body Weight (lbs):</label>
+  <input type="number" id="weightInput" value="154" min="1" max="600" />
+  <span style="font-size: 0.9rem; color: #aaa;">(used to calculate ingredient per lb)</span>
+  <br />
+  <button onclick="calculate()">Show Results</button>
+</div>
 
   <details style="margin-bottom: 1rem;">
     <summary style="cursor:pointer; font-weight: bold; color: #4fc3f7;">What do VGCC, Mito, and BBB mean?</summary>
@@ -96,7 +98,6 @@
   </details>
 
   <div id="result"></div>
-  <button onclick="calculate()">Show Results</button>
   <button onclick="generateReport()">Generate Report</button>
   <button onclick="downloadCSV()">Download CSV</button>
 <script>
