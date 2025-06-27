@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Advanced Vaccine Ingredient Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .vaccine-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    label {
+      background: #222;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      flex: 1 1 200px;
+      max-width: 250px;
+      text-align: left;
+    }
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.95em;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #222;
+    }
+    .highlight {
+      background-color: #330000;
+      color: #f55;
+    }
+    button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 10px 20px;
+      background-color: #333;
+      color: #eee;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #444;
+    }
+    #weightInput {
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 5px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Advanced Vaccine Ingredient Calculator</h1>
+  <div class="vaccine-select" id="vaccineForm"></div>
+
+  <div style="margin: 1rem 0;">
+    <label for="weightInput">Body Weight (kg):</label>
+    <input type="number" id="weightInput" value="70" min="1" max="300" />
+  </div>
+
+  <details style="margin-bottom: 1rem;">
+    <summary style="cursor:pointer;">What do VGCC, Mito, and BBB mean?</summary>
+    <ul>
+      <li><strong>VGCC</strong>: Voltage-gated calcium channels — related to cellular excitability and toxicity.</li>
+      <li><strong>Mito</strong>: Mitochondrial impact — effects on cellular energy production.</li>
+      <li><strong>BBB</strong>: Blood-brain barrier permeability — potential for neurotoxicity.</li>
+    </ul>
+  </details>
+
+  <div id="result"></div>
+  <button onclick="generateReport()">Generate Report</button>
+  <button onclick="downloadCSV()">Download CSV</button>
+  <script>
+    const vaccines = {
+      "Hepatitis B (Engerix-B)": {
+        "Aluminum phosphate": { amount: 250, unit: "mcg", origin: "Inorganic salt", effect: "Adjuvant", vgcc: "High", mito: "Yes", bbb: "Yes" },
+        "Thimerosal": { amount: 25, unit: "mcg", origin: "Ethylmercury", effect: "Neurotoxin", vgcc: "Moderate", mito: "Yes", bbb: "Yes" }
+      },
+      "COVID-19 (Pfizer)": {
+        "mRNA (BNT162b2)": { amount: 30, unit: "mcg", origin: "Synthetic RNA", effect: "Spike protein encoding", vgcc: "Unknown", mito: "Possible", bbb: "Unknown" },
+        "PEG-2000": { amount: 50, unit: "mcg", origin: "PEG", effect: "Allergen, BBB penetrant", vgcc: "Low", mito: "Minimal", bbb: "Yes" },
+        "ALC-0315": { amount: 100, unit: "mcg", origin: "Lipid", effect: "mRNA delivery", vgcc: "Unknown", mito: "Moderate", bbb: "Yes" }
+      },
+      "MMR II": {
+        "Gelatin (porcine)": { amount: 14, unit: "mg", origin: "Pig collagen", effect: "Allergen", vgcc: "Low", mito: "No", bbb: "Minimal" },
+        "Neomycin": { amount: 25, unit: "mcg", origin: "Antibiotic", effect: "Mitochondrial inhibitor", vgcc: "Moderate", mito: "Yes", bbb: "Low" }
+      },
+      // You can expand this dataset further as needed…
+    };
+
+    const thresholds = {
+      "Aluminum phosphate": 150,
+      "Thimerosal": 15,
+      "PEG-2000": 50
+    };
+
+    const vaccineForm = document.getElementById("vaccineForm");
+    const resultDiv = document.getElementById("result");
+
+    Object.keys(vaccines).forEach(vaccine => {
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="checkbox" value="${vaccine}" onchange="calculate()"> ${vaccine}`;
+      vaccineForm.appendChild(label);
+    });
+
+    function calculate() {
+      const selected = Array.from(document.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value);
+      const totalIngredients = {};
+      const bodyWeight = parseFloat(document.getElementById("weightInput").value) || 70;
+
+      selected.forEach(vaccine => {
+        const ingredients = vaccines[vaccine];
+        Object.entries(ingredients).forEach(([name, data]) => {
+          if (!totalIngredients[name]) {
+            totalIngredients[name] = { ...data, total: 0 };
+          }
+          totalIngredients[name].total += data.amount;
+        });
+      });
+
+      let html = `<table>
+        <tr><th>Ingredient</th><th>Total</th><th>Per kg (approx)</th><th>Origin</th><th>Effect</th><th>VGCC</th><th>Mito</th><th>BBB</th></tr>`;
+
+      Object.entries(totalIngredients).forEach(([name, data]) => {
+        const perKg = (data.total / bodyWeight).toFixed(2);
+        const highlight = thresholds[name] && data.total > thresholds[name] ? 'highlight' : '';
+        html += `<tr class="${highlight}">
+          <td>${name}</td>
+          <td>${data.total} ${data.unit}</td>
+          <td>${perKg} ${data.unit}/kg</td>
+          <td>${data.origin}</td>
+          <td>${data.effect}</td>
+          <td>${data.vgcc}</td>
+          <td>${data.mito}</td>
+          <td>${data.bbb}</td>
+        </tr>`;
+      });
+
+      html += `</table>`;
+      resultDiv.innerHTML = html;
+    }
+
+    function generateReport() {
+      const win = window.open('', '', 'width=800,height=600');
+      win.document.write('<html><head><title>Vaccine Report</title></head><body style="font-family:Arial,sans-serif;">');
+      win.document.write('<h1>Vaccine Ingredient Summary</h1>');
+      win.document.write(resultDiv.innerHTML);
+      win.document.write('</body></html>');
+      win.document.close();
+      win.print();
+    }
+
+    function downloadCSV() {
+      const selected = Array.from(document.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value);
+      const totalIngredients = {};
+      const bodyWeight = parseFloat(document.getElementById("weightInput").value) || 70;
+
+      selected.forEach(vaccine => {
+        const ingredients = vaccines[vaccine];
+        Object.entries(ingredients).forEach(([name, data]) => {
+          if (!totalIngredients[name]) {
+            totalIngredients[name] = { ...data, total: 0 };
+          }
+          totalIngredients[name].total += data.amount;
+        });
+      });
+
+      let csv = "Ingredient,Total,PerKg,Unit,Origin,Effect,VGCC,Mito,BBB\n";
+      Object.entries(totalIngredients).forEach(([name, data]) => {
+        const perKg = (data.total / bodyWeight).toFixed(2);
+        csv += `${name},${data.total},${perKg},${data.unit},${data.origin},${data.effect},${data.vgcc},${data.mito},${data.bbb}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'vaccine_ingredients.csv');
+      link.click();
+    }
+  </script>
+</body>
+</html>
