@@ -78,6 +78,9 @@
 </head>
 <body>
   <h1>Advanced Vaccine Ingredient Calculator</h1>
+  <div id="result" style="text-align: center; margin-top: -10px; margin-bottom: 20px; color: #ccc;">
+  Select vaccines and enter weight, then click "Show Results".
+</div>
   <div class="vaccine-select" id="vaccineForm"></div>
 
 <div style="margin: 1rem 0;">
@@ -96,7 +99,6 @@
       <li><strong>BBB</strong>: Blood-Brain Barrier permeability — measures neuroinvasion risk.</li>
     </ul>
   </details>
-  <div id="result">Select vaccines and enter weight, then click "Show Results".</div>
   <button onclick="generateReport()">Generate Report</button>
   <button onclick="downloadCSV()">Download CSV</button>
   
