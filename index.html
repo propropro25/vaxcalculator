@@ -227,7 +227,7 @@ function downloadCSV() {
 
   let csv = "Ingredient,Total,Per lb,Unit,Origin,Effect,VGCC,Mito,BBB\n";
   Object.entries(totalIngredients).forEach(([name, d]) => {
-    const perLb = (d.total / weight).toFixed(2);
+    const perLb = (data.total / bodyWeight).toFixed(2);
     csv += `${name},${d.total},${perLb},${d.unit},${d.origin},${d.effect},${d.vgcc},${d.mito},${d.bbb}\n`;
   });
 
@@ -240,6 +240,8 @@ function downloadCSV() {
   a.click();
   document.body.removeChild(a);
 }
+  <div id="result">Select vaccines and enter weight, then click "Show Results".</div>
+
 </script>
 </body>
 </html>
