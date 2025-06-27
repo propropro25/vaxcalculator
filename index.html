@@ -214,6 +214,7 @@ function downloadCSV() {
   const selected = Array.from(document.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value);
   const totalIngredients = {};
   const weight = parseFloat(document.getElementById("weightInput").value) || 154;
+  calculate();
 
   selected.forEach(vaccine => {
     Object.entries(vaccines[vaccine]).forEach(([name, data]) => {
